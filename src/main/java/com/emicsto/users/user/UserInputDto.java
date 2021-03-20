@@ -1,13 +1,12 @@
 package com.emicsto.users.user;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import lombok.Builder;
 import lombok.Data;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
-import java.time.ZonedDateTime;
+import java.time.OffsetDateTime;
 
 @Data
 @Builder
@@ -29,7 +28,7 @@ public class UserInputDto {
 
     @NotNull
     @JsonProperty("created_at")
-    private ZonedDateTime createdAt;
+    private OffsetDateTime createdAt;
 
     @Min(0)
     @NotNull

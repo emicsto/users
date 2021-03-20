@@ -1,9 +1,10 @@
 package com.emicsto.users.user;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 import java.math.BigDecimal;
-import java.time.ZonedDateTime;
+import java.time.OffsetDateTime;
 
 @Data
 class UserOutputDto {
@@ -12,6 +13,7 @@ class UserOutputDto {
     private String name;
     private String type;
     private String avatarUrl;
-    private ZonedDateTime createdAt;
+    private OffsetDateTime createdAt;
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     private BigDecimal calculations;
 }
