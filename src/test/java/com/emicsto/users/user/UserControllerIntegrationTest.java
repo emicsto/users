@@ -1,6 +1,5 @@
 package com.emicsto.users.user;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.modelmapper.ModelMapper;
@@ -18,6 +17,7 @@ import java.time.ZoneOffset;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -35,6 +35,7 @@ class UserControllerIntegrationTest {
     private static final String USER_AVATAR_URL = "sample_avatar_url";
     private static final OffsetDateTime USER_CREATED_AT = OffsetDateTime.of(2020, 12, 29, 12, 10, 5, 0, ZoneOffset.UTC);
     private static final int USER_FOLLOWERS = 2;
+    private static final int USER_ZERO_FOLLOWERS = 0;
     private static final int USER_PUBLIC_REPOS = 3;
 
     @Autowired
@@ -49,8 +50,8 @@ class UserControllerIntegrationTest {
     @MockBean
     private UserClient userClient;
 
-    @BeforeEach
-    void init() {
+    @Test
+    void shouldReturnValidUserData() throws Exception {
         given(userClient.getUser(USER_LOGIN)).willReturn(
                 UserInputDto.builder()
                         .id(USER_ID)
@@ -63,10 +64,7 @@ class UserControllerIntegrationTest {
                         .publicRepos(USER_PUBLIC_REPOS)
                         .build()
         );
-    }
 
-    @Test
-    void shouldReturnValidUserData() throws Exception {
         mockMvc.perform(get("/users/" + USER_LOGIN)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -79,9 +77,48 @@ class UserControllerIntegrationTest {
         .andExpect(jsonPath("$.calculations", is("15.00")));
     }
 
+    @Test
+    void shouldReturnNullCalculations_whenUserHasNoFollowers() throws Exception {
+        given(userClient.getUser(USER_LOGIN)).willReturn(
+                UserInputDto.builder()
+                        .id(USER_ID)
+                        .login(USER_LOGIN)
+                        .name(USER_NAME)
+                        .type(USER_TYPE)
+                        .avatarUrl(USER_AVATAR_URL)
+                        .createdAt(USER_CREATED_AT)
+                        .followers(USER_ZERO_FOLLOWERS)
+                        .publicRepos(USER_PUBLIC_REPOS)
+                        .build()
+        );
+
+        mockMvc.perform(get("/users/" + USER_LOGIN)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+        .andExpect(jsonPath("$.id", is(USER_ID), Long.class))
+        .andExpect(jsonPath("$.login", is(USER_LOGIN)))
+        .andExpect(jsonPath("$.name", is(USER_NAME)))
+        .andExpect(jsonPath("$.type", is(USER_TYPE)))
+        .andExpect(jsonPath("$.avatarUrl", is(USER_AVATAR_URL)))
+        .andExpect(jsonPath("$.createdAt", is(USER_CREATED_AT.toString())))
+        .andExpect(jsonPath("$.calculations", nullValue()));
+    }
 
     @Test
     void shouldSaveNewUserToDatabaseAndThenIncrementRequestCountTwice() throws Exception {
+        given(userClient.getUser(USER_LOGIN)).willReturn(
+                UserInputDto.builder()
+                        .id(USER_ID)
+                        .login(USER_LOGIN)
+                        .name(USER_NAME)
+                        .type(USER_TYPE)
+                        .avatarUrl(USER_AVATAR_URL)
+                        .createdAt(USER_CREATED_AT)
+                        .followers(USER_FOLLOWERS)
+                        .publicRepos(USER_PUBLIC_REPOS)
+                        .build()
+        );
+
         assertThat(userRepository.findByLogin(USER_LOGIN)).isEmpty();
 
 

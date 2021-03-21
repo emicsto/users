@@ -12,8 +12,8 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 @Service
-@RequiredArgsConstructor
 @Validated
+@RequiredArgsConstructor
 class UserService {
     private final UserRepository userRepository;
     private final UserClient userClient;
@@ -27,11 +27,11 @@ class UserService {
 
         UserInputDto userInputDto = userClient.getUser(login);
         UserOutputDto userOutputDto = mapper.map(userInputDto, UserOutputDto.class);
-        userOutputDto.setCalculations(calculateRepos(userInputDto.getFollowers(), userInputDto.getPublicRepos()));
+        userOutputDto.setCalculations(calculate(userInputDto.getFollowers(), userInputDto.getPublicRepos()));
         return userOutputDto;
     }
 
-    private BigDecimal calculateRepos(@Min(0) @NotNull Integer followers, @Min(0) @NotNull Integer publicRepos) {
+    private BigDecimal calculate(@Min(0) @NotNull Integer followers, @Min(0) @NotNull Integer publicRepos) {
         if(followers == 0) {
             return null;
         } else {
