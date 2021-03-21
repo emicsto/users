@@ -1,6 +1,7 @@
 package com.emicsto.users.user;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -10,6 +11,7 @@ import java.time.OffsetDateTime;
 class UserOutputDto {
 
     private Long id;
+
     private String login;
 
     private String name;
@@ -20,6 +22,8 @@ class UserOutputDto {
 
     private OffsetDateTime createdAt;
 
+    @ApiModelProperty(notes = "Result of calculation 6/followers * (2 + public_repos) of scale 5. " +
+            "Returns null if followers are equal to 0.")
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     private BigDecimal calculations;
 }
