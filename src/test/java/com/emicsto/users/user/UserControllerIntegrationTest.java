@@ -16,12 +16,12 @@ import org.springframework.test.web.servlet.MockMvc;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
+import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -82,7 +82,7 @@ class UserControllerIntegrationTest {
         .andExpect(jsonPath("$.type", is(USER_TYPE)))
         .andExpect(jsonPath("$.avatarUrl", is(USER_AVATAR_URL)))
         .andExpect(jsonPath("$.createdAt", is(USER_CREATED_AT.toString())))
-        .andExpect(jsonPath("$.calculations", is("15.00000")));
+        .andExpect(jsonPath("$.calculations", comparesEqualTo(BigDecimal.valueOf(15)), BigDecimal.class));
 
         em.flush();
     }

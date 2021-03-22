@@ -1,6 +1,5 @@
 package com.emicsto.users.user;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -24,6 +23,5 @@ class UserOutputDto {
 
     @ApiModelProperty(notes = "Result of calculation 6/followers * (2 + public_repos) of scale 5. " +
             "Returns null if followers are equal to 0.")
-    @JsonFormat(shape = JsonFormat.Shape.STRING)
     private BigDecimal calculations;
 }
