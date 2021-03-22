@@ -32,7 +32,7 @@ class UserService {
     }
 
     private BigDecimal calculate(@Min(0) @NotNull Integer followers, @Min(0) @NotNull Integer publicRepos) {
-        if(followers == 0) {
+        if (followers == 0) {
             return null;
         } else {
             return BigDecimal.valueOf(6).divide(BigDecimal.valueOf(followers), 5, RoundingMode.HALF_UP)

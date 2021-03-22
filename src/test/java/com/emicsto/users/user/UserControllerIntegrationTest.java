@@ -1,6 +1,5 @@
 package com.emicsto.users.user;
 
-import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.modelmapper.ModelMapper;
@@ -76,13 +75,13 @@ class UserControllerIntegrationTest {
         mockMvc.perform(get("/users/" + USER_LOGIN)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-        .andExpect(jsonPath("$.id", is(USER_ID), Long.class))
-        .andExpect(jsonPath("$.login", is(USER_LOGIN)))
-        .andExpect(jsonPath("$.name", is(USER_NAME)))
-        .andExpect(jsonPath("$.type", is(USER_TYPE)))
-        .andExpect(jsonPath("$.avatarUrl", is(USER_AVATAR_URL)))
-        .andExpect(jsonPath("$.createdAt", is(USER_CREATED_AT.toString())))
-        .andExpect(jsonPath("$.calculations", comparesEqualTo(BigDecimal.valueOf(15)), BigDecimal.class));
+                .andExpect(jsonPath("$.id", is(USER_ID), Long.class))
+                .andExpect(jsonPath("$.login", is(USER_LOGIN)))
+                .andExpect(jsonPath("$.name", is(USER_NAME)))
+                .andExpect(jsonPath("$.type", is(USER_TYPE)))
+                .andExpect(jsonPath("$.avatarUrl", is(USER_AVATAR_URL)))
+                .andExpect(jsonPath("$.createdAt", is(USER_CREATED_AT.toString())))
+                .andExpect(jsonPath("$.calculations", comparesEqualTo(BigDecimal.valueOf(15)), BigDecimal.class));
 
         em.flush();
     }
@@ -105,19 +104,21 @@ class UserControllerIntegrationTest {
         mockMvc.perform(get("/users/" + USER_LOGIN)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-        .andExpect(jsonPath("$.id", is(USER_ID), Long.class))
-        .andExpect(jsonPath("$.login", is(USER_LOGIN)))
-        .andExpect(jsonPath("$.name", is(USER_NAME)))
-        .andExpect(jsonPath("$.type", is(USER_TYPE)))
-        .andExpect(jsonPath("$.avatarUrl", is(USER_AVATAR_URL)))
-        .andExpect(jsonPath("$.createdAt", is(USER_CREATED_AT.toString())))
-        .andExpect(jsonPath("$.calculations", nullValue()));
+                .andExpect(jsonPath("$.id", is(USER_ID), Long.class))
+                .andExpect(jsonPath("$.login", is(USER_LOGIN)))
+                .andExpect(jsonPath("$.name", is(USER_NAME)))
+                .andExpect(jsonPath("$.type", is(USER_TYPE)))
+                .andExpect(jsonPath("$.avatarUrl", is(USER_AVATAR_URL)))
+                .andExpect(jsonPath("$.createdAt", is(USER_CREATED_AT.toString())))
+                .andExpect(jsonPath("$.calculations", nullValue()));
 
         em.flush();
     }
 
     @Test
     void shouldSaveNewUserToDatabaseAndThenIncrementRequestCountTwice() throws Exception {
+        assertThat(userRepository.findByLogin(USER_LOGIN)).isEmpty();
+
         given(userClient.getUser(USER_LOGIN)).willReturn(
                 UserInputDto.builder()
                         .id(USER_ID)
@@ -130,8 +131,6 @@ class UserControllerIntegrationTest {
                         .publicRepos(USER_PUBLIC_REPOS)
                         .build()
         );
-
-        assertThat(userRepository.findByLogin(USER_LOGIN)).isEmpty();
 
         mockMvc.perform(get("/users/" + USER_LOGIN)
                 .contentType(MediaType.APPLICATION_JSON))
