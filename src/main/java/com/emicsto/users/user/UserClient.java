@@ -8,10 +8,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import javax.validation.Valid;
 
 @Validated
-@FeignClient(value= "users", url = "https://api.github.com/users")
+@FeignClient(value = "users", url = "${api.url.github}")
 public interface UserClient {
 
     @Valid
-    @GetMapping( "/{login}")
+    @GetMapping("/{login}")
     UserInputDto getUser(@PathVariable String login);
 }
