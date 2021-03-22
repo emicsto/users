@@ -35,7 +35,7 @@ class UserService {
         if(followers == 0) {
             return null;
         } else {
-            return BigDecimal.valueOf(6).divide(BigDecimal.valueOf(followers), 2, RoundingMode.HALF_UP)
+            return BigDecimal.valueOf(6).divide(BigDecimal.valueOf(followers), 5, RoundingMode.HALF_UP)
                     .multiply(BigDecimal.valueOf(2L + publicRepos));
         }
     }

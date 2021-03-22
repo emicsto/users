@@ -12,7 +12,7 @@ import javax.persistence.Id;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-class User {
+public class User {
     @Id
     private String login;
 

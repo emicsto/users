@@ -1,5 +1,6 @@
 package com.emicsto.users.user;
 
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.modelmapper.ModelMapper;
@@ -12,6 +13,9 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.transaction.Transactional;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 
@@ -23,10 +27,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@ExtendWith(SpringExtension.class)
 @SpringBootTest
 @AutoConfigureMockMvc
+@Transactional
 @ActiveProfiles("test")
+@ExtendWith(SpringExtension.class)
 class UserControllerIntegrationTest {
     private static final String USER_LOGIN = "sample_login";
     private static final long USER_ID = 1L;
@@ -38,11 +43,14 @@ class UserControllerIntegrationTest {
     private static final int USER_ZERO_FOLLOWERS = 0;
     private static final int USER_PUBLIC_REPOS = 3;
 
+    @PersistenceContext
+    private EntityManager em;
+
     @Autowired
     private MockMvc mockMvc;
 
     @Autowired
-    private  ModelMapper mapper;
+    private ModelMapper mapper;
 
     @Autowired
     private UserRepository userRepository;
@@ -74,7 +82,9 @@ class UserControllerIntegrationTest {
         .andExpect(jsonPath("$.type", is(USER_TYPE)))
         .andExpect(jsonPath("$.avatarUrl", is(USER_AVATAR_URL)))
         .andExpect(jsonPath("$.createdAt", is(USER_CREATED_AT.toString())))
-        .andExpect(jsonPath("$.calculations", is("15.00")));
+        .andExpect(jsonPath("$.calculations", is("15.00000")));
+
+        em.flush();
     }
 
     @Test
@@ -102,6 +112,8 @@ class UserControllerIntegrationTest {
         .andExpect(jsonPath("$.avatarUrl", is(USER_AVATAR_URL)))
         .andExpect(jsonPath("$.createdAt", is(USER_CREATED_AT.toString())))
         .andExpect(jsonPath("$.calculations", nullValue()));
+
+        em.flush();
     }
 
     @Test
@@ -121,10 +133,11 @@ class UserControllerIntegrationTest {
 
         assertThat(userRepository.findByLogin(USER_LOGIN)).isEmpty();
 
-
         mockMvc.perform(get("/users/" + USER_LOGIN)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
+
+        em.flush();
 
         User user = userRepository.findByLogin(USER_LOGIN).orElseThrow(() -> new UserNotFoundException(USER_LOGIN));
 
@@ -134,6 +147,8 @@ class UserControllerIntegrationTest {
         mockMvc.perform(get("/users/" + USER_LOGIN)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
+
+        em.flush();
 
         user = userRepository.findByLogin(USER_LOGIN).orElseThrow(() -> new UserNotFoundException(USER_LOGIN));
 
