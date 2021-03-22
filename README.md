@@ -1,5 +1,5 @@
 # Users app
-Application that retrieves user data from `https://api.github.com/users/{login}`, save in the database how many time request was made for a prticular user, does some magic calculations and then returns the result to the user.
+Application that retrieves user data from `https://api.github.com/users/{login}`, save in the database how many times request was made for a particular user, does some magic calculations and then returns the result to the user.
 
 ## Requirements
 *  [MySQL](https://dev.mysql.com/downloads/mysql/5.7.html)
